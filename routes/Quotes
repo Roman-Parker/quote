@@ -1,0 +1,44 @@
+const express = require('express')
+const Quote = require('../models/Quotes');
+const router = express.Router()
+
+// all routes
+router.get('/', (req,res)=>{
+    res.send("Our quotes route")
+})
+
+router.post('/new', async(req,res)=>{
+    console.log(req)
+    const newQuote = new Quote(req.body);
+    const savedQuote = await newQuote.save();
+    res.json(savedQuote)
+})
+
+router.get('/get/all', async(req, res) => {
+    const quotes = await Quote.find().toArray();
+    res.json(quotes)
+})
+
+router.get('/get/:id', async(req, res) => {
+    const quote = await Quote.findById({_id: req.params.id})
+    res.json(quote);
+})
+
+router.get('/random', async (req, res) => {
+    const count = await Quote.countDocuments();
+    const random = Math.floor(Math.random() * count);
+    const quote = await Quote.findOne().skip(random);
+    res.json(quote);
+});
+
+router.delete('delete/:id', async(req, res) => {
+    const result = await Quote.findByIdAndDelete({_id: req.params.id});
+    res.json(result);
+})
+
+router.patch('update/:id', async(req, res) => {
+    const quote = await Quote.updateOne({_id: req.params.id}, {$set: req.body});
+    res.json(q);
+})
+
+module.exports = router;
